@@ -1,0 +1,16 @@
+"use strict";
+exports.__esModule = true;
+var express_1 = require("express");
+var userController = require("../controllers/user.controller");
+var userValidate = require("../validates/user.validate");
+var multer_1 = require("multer");
+var cloudinary_helper_1 = require("../helpers/cloudinary.helper");
+var authMiddleware = require("../middlewares/auth.middleware");
+var router = express_1.Router();
+var upload = multer_1["default"]({ storage: cloudinary_helper_1.storage });
+router.post('/register', userValidate.registerPost, userController.registerPost);
+router.post('/login', userValidate.loginPost, userController.loginPost);
+router.patch('/profile', authMiddleware.verifyTokenUser, upload.single("avatar"), userController.profilePatch);
+router.get('/cv/list', authMiddleware.verifyTokenUser, userController.listCV);
+router.get('/cv/detail/:id', authMiddleware.verifyTokenUser, userController.detailCV);
+exports["default"] = router;

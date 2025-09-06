@@ -1,0 +1,10 @@
+"use strict";
+exports.__esModule = true;
+var express_1 = require("express");
+var uploadController = require("../controllers/upload.controller");
+var multer_1 = require("multer");
+var cloudinary_helper_1 = require("../helpers/cloudinary.helper");
+var router = express_1.Router();
+var upload = multer_1["default"]({ storage: cloudinary_helper_1.storage });
+router.post('/image', upload.single("file"), uploadController.imagePost);
+exports["default"] = router;
