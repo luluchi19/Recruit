@@ -51,6 +51,7 @@ export const FormLogin = () => {
         const email = event.target.email.value;
         const password = event.target.password.value;
 
+        console.log('API URL:', process.env.NEXT_PUBLIC_API_URL); // Debug URL
         const dataFinal = {
           email: email,
           password: password
