@@ -3,36 +3,44 @@ name: CI/CD Deploy
 on:
   push:
     branches:
-      - main  # Chạy khi push vào branch main
+      - main
+    paths:
+      - 'project-2-backend/**'  # Theo dõi thay đổi trong backend
+      - 'project-2-frontend/**'  # Theo dõi thay đổi trong frontend
 
 jobs:
   deploy-backend:
-    # Chỉ chạy nếu có thay đổi trong thư mục backend/
-    if: github.event_name == 'push' && contains(github.event.commits.*.modified, 'project-2-backend/')
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: project-2-backend  # Thiết lập thư mục làm việc là backend
+        working-directory: project-2-backend
+    if: contains(github.event_name, 'push') && github.event.commits
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug changed files
+        run: |
+          echo "Changed files:"
+          git diff --name-only HEAD^ HEAD
+        working-directory: .
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'  # Phiên bản Node.js, thay nếu cần (kiểm tra package.json trong backend)
+          node-version: '22'
 
       - name: Install dependencies
-        run: npm ci  # Sử dụng npm ci để cài đặt nhanh và đúng dependencies
+        run: npm ci
 
       - name: Run tests
-        run: npm test || true  # Chạy test, thêm || true để không fail nếu chưa có test
+        run: npm test || true
 
       - name: Build backend
-        run: npm run build || true  # Chạy build nếu có, bỏ qua nếu không cần
+        run: npm run build || true
 
       - name: Create deployment package
-        run: zip -r project-2-backend.zip . -x "*.git*"  # Zip thư mục backend, loại trừ .git
+        run: zip -r project-2-backend.zip . -x "*.git*"
 
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
@@ -41,36 +49,41 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: ${{ secrets.EB_APP_NAME }}
           environment_name: ${{ secrets.EB_ENV_NAME }}
-          version_label: ${{ github.sha }}  # Dùng commit SHA làm version label
+          version_label: ${{ github.sha }}
           region: ${{ secrets.AWS_REGION }}
           deployment_package: project-2-backend.zip
         env:
           WORKING_DIRECTORY: project-2-backend
 
   deploy-frontend:
-    # Chỉ chạy nếu có thay đổi trong thư mục frontend/
-    if: github.event_name == 'push' && contains(github.event.commits.*.modified, 'project-2-frontend/')
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: project-2-frontend  # Thiết lập thư mục làm việc là frontend
+        working-directory: project-2-frontend
+    if: contains(github.event_name, 'push') && github.event.commits
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug changed files
+        run: |
+          echo "Changed files:"
+          git diff --name-only HEAD^ HEAD
+        working-directory: .
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'  # Phiên bản Node.js cho Next.js, thay nếu cần
+          node-version: '22'
 
       - name: Install dependencies
-        run: npm ci  # Cài đặt dependencies cho frontend
+        run: npm ci
 
       - name: Run tests
-        run: npm test || true  # Chạy test, bỏ qua nếu chưa có
+        run: npm test || true
 
       - name: Build frontend
-        run: npm run build  # Build Next.js (bắt buộc cho Vercel)
+        run: npm run build
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
@@ -80,4 +93,4 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           scope: ${{ secrets.VERCEL_ORG_ID }}
           working-directory: project-2-frontend
-          vercel-args: '--prod'  # Deploy lên production
+          vercel-args: '--prod'
