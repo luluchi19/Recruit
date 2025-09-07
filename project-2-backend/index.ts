@@ -24,23 +24,28 @@ app.get('/', (req, res) => {
 });
 
 // Cấu hình CORS
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
-  'http://localhost:3000',
-  'https://recruit-9ij4r8zj9-nguyen-kim-truong-giangs-projects.vercel.app',
-];
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim())
+  : [
+      'http://localhost:3000',
+      'https://recruit-9ij4r8zj9-nguyen-kim-truong-giangs-projects.vercel.app',
+    ];
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Cho phép request không có origin (như Postman) hoặc origin trong danh sách
+    console.log("Request origin:", origin);
+    console.log("Allowed origins:", allowedOrigins);
+
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log("Blocked by CORS:", origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
   methods: ["GET", "POST", "PATCH", "DELETE"],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true // Cho phép gửi cookie
+  credentials: true
 }));
 
 // Cho phép gửi data lên dạng json
