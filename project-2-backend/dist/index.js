@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 // Cấu hình CORS
 const allowedOrigins = ((_a = process.env.ALLOWED_ORIGINS) === null || _a === void 0 ? void 0 : _a.split(',')) || [
     'http://localhost:3000',
-    'https://RecruitonProduction-frontend-env.ap-southeast-2.elasticbeanstalk.com',
+    'https://recruit-production.up.railway.app',
 ];
 app.use(cors_1.default({
     origin: (origin, callback) => {

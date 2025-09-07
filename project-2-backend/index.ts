@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 // Cấu hình CORS
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
   'http://localhost:3000',
-  'https://RecruitonProduction-frontend-env.ap-southeast-2.elasticbeanstalk.com',
+  'https://recruit-9ij4r8zj9-nguyen-kim-truong-giangs-projects.vercel.app',
 ];
 
 app.use(cors({
