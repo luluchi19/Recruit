@@ -85,7 +85,7 @@ export const HeaderAccount = () => {
           <>
             {/* Chưa đăng nhập */}
             <Link href="/user/login" className="">
-              Đăng Nhập TEST DEPLOY
+              Đăng Nhập
             </Link>
             <span className="">/</span>
             <Link href="/user/register" className="">

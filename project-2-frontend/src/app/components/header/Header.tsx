@@ -21,7 +21,7 @@ export const Header = () => {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/" className="text-white font-[800] sm:text-[28px] text-[20px] lg:flex-none flex-1">
-              28.ITJobs
+              28.ITJobs DEPLOY
             </Link>
             {/* Menu */}
             <HeaderMenu showMenu={showMenu} />
