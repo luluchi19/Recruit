@@ -9,14 +9,35 @@ import cookieParser = require('cookie-parser');
 dotenv.config();
 
 const app = express();
-const port = 4000;
+console.log(`PORT from environment: ${process.env.PORT}`);
+const port = process.env.PORT || 3000;
 
 // Kết nối DB
 connectDB();
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Backend is running' });
+});
+
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Welcome to Recruitment API' });
+});
+
 // Cấu hình CORS
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
+  'http://localhost:3000',
+  'https://RecruitonProduction-frontend-env.ap-southeast-2.elasticbeanstalk.com',
+];
+
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: (origin, callback) => {
+    // Cho phép request không có origin (như Postman) hoặc origin trong danh sách
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ["GET", "POST", "PATCH", "DELETE"],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true // Cho phép gửi cookie
